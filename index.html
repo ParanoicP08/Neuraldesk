@@ -1,379 +1,489 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>NeuralDesk</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: #0d0d10; color: #e8e8f0; font-family: Inter, system-ui, sans-serif; font-size: 14px; }
-  textarea { font-family: inherit; }
-  ::-webkit-scrollbar { width: 5px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: #2a2a35; border-radius: 4px; }
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0d0d10;color:#e8e8f0;font-family:Inter,system-ui,sans-serif;font-size:14px;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+button{cursor:pointer;font-family:inherit}
+textarea,input{font-family:inherit;outline:none}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-thumb{background:#2a2a35;border-radius:4px}
+
+/* TOPBAR */
+#topbar{display:flex;align-items:center;gap:10px;padding:0 16px;height:50px;background:#16161a;border-bottom:1px solid #2a2a35;flex-shrink:0;flex-wrap:wrap}
+#logo-dot{width:8px;height:8px;border-radius:50%;background:#7c6af7;box-shadow:0 0 8px #7c6af7;flex-shrink:0}
+#logo-text{font-weight:600;font-size:15px}
+#logo-sub{font-size:11px;color:#5a5a70}
+#key-area{margin-left:auto;display:flex;align-items:center;gap:6px}
+#key-input{background:#1e1e24;border:1px solid #2a2a35;color:#e8e8f0;padding:5px 10px;border-radius:6px;font-size:12px;width:190px}
+#key-save{background:#7c6af7;border:none;color:#fff;padding:5px 12px;border-radius:6px;font-size:12px}
+#key-status{display:flex;align-items:center;gap:6px;font-size:12px;color:#4ade80}
+#key-status-dot{width:7px;height:7px;border-radius:50%;background:#4ade80;flex-shrink:0}
+#key-change{background:none;border:1px solid #2a2a35;color:#5a5a70;padding:3px 8px;border-radius:5px;font-size:11px}
+
+/* LAYOUT */
+#main{display:flex;flex:1;overflow:hidden}
+
+/* SIDEBAR */
+#sidebar{width:220px;background:#16161a;border-right:1px solid #2a2a35;display:flex;flex-direction:column;padding:14px;gap:10px;flex-shrink:0}
+#sidebar-label{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#5a5a70}
+#dropzone{border:1px dashed #2a2a35;border-radius:8px;padding:20px 10px;text-align:center;color:#5a5a70;font-size:12px;position:relative;transition:border-color .2s,background .2s}
+#dropzone.drag{border-color:#7c6af7;background:rgba(124,106,247,0.08)}
+#dropzone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+#drop-icon{font-size:22px;margin-bottom:6px}
+#drop-hint{font-size:10px;color:#5a5a70;margin-top:4px}
+#doc-list{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:5px}
+.doc-item{background:#1e1e24;border:1px solid #2a2a35;border-radius:6px;padding:7px 9px;display:flex;align-items:center;gap:6px}
+.doc-name{flex:1;font-size:11px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.doc-meta{font-size:10px;color:#5a5a70}
+.doc-remove{background:none;border:none;color:#5a5a70;font-size:13px;padding:0 2px}
+#no-docs{font-size:11px;color:#5a5a70;text-align:center;padding:10px 0}
+
+/* CHAT */
+#chat-area{display:flex;flex-direction:column;flex:1;overflow:hidden}
+#mode-bar{display:flex;gap:4px;padding:6px 14px;border-bottom:1px solid #2a2a35;background:#16161a;align-items:center}
+.mode-btn{padding:4px 12px;border-radius:5px;border:none;background:transparent;color:#9898b0;font-size:12px}
+.mode-btn.active{background:rgba(124,106,247,0.15);border:1px solid #3d3578;color:#7c6af7}
+#chunk-info{margin-left:auto;font-size:11px;color:#5a5a70}
+#messages{flex:1;overflow-y:auto;padding:18px 18px;display:flex;flex-direction:column;gap:12px}
+#empty-state{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:#5a5a70;text-align:center;padding:40px 20px}
+#empty-icon{font-size:40px;opacity:0.3}
+#empty-title{font-size:15px;font-weight:500;color:#9898b0}
+#empty-sub{font-size:12px;max-width:260px;line-height:1.5}
+
+.msg-row{display:flex;gap:8px;max-width:100%}
+.msg-row.user{flex-direction:row-reverse;align-self:flex-end}
+.msg-row.assistant{align-self:flex-start}
+.msg-avatar{width:26px;height:26px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.msg-avatar.user{background:#1e1e24;border:1px solid #2a2a35}
+.msg-avatar.assistant{background:rgba(124,106,247,0.15);border:1px solid #3d3578}
+.msg-body{display:flex;flex-direction:column;gap:4px;max-width:580px}
+.msg-bubble{padding:9px 13px;border-radius:9px;font-size:13px;line-height:1.65;white-space:pre-wrap;word-break:break-word}
+.msg-bubble.user{background:#3d3578;border:1px solid rgba(124,106,247,0.3);color:#e8e8f0}
+.msg-bubble.assistant{background:#1e1e24;border:1px solid #2a2a35;color:#e8e8f0}
+.msg-bubble.error{color:#f87171}
+.msg-thinking{font-size:11px;color:#7c6af7;opacity:0.7;padding:4px 0}
+.msg-sources{display:flex;flex-wrap:wrap;gap:4px;margin-top:2px}
+.source-tag{background:rgba(124,106,247,0.1);border:1px solid #3d3578;color:#7c6af7;font-size:10px;padding:1px 7px;border-radius:4px}
+
+#input-area{padding:10px 14px 14px;border-top:1px solid #2a2a35;background:#16161a}
+#input-box{display:flex;gap:8px;background:#1e1e24;border:1px solid #2a2a35;border-radius:9px;padding:8px 10px}
+#msg-input{flex:1;background:transparent;border:none;color:#e8e8f0;font-size:13px;resize:none;max-height:100px;line-height:1.5}
+#send-btn{background:#7c6af7;border:none;border-radius:6px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;align-self:flex-end;flex-shrink:0;transition:opacity .2s}
+#send-btn:disabled{opacity:0.4;cursor:not-allowed}
+
+#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#1e1e24;border:1px solid #2a2a35;color:#e8e8f0;padding:7px 16px;border-radius:7px;font-size:12px;z-index:999;display:none;white-space:nowrap}
+
+@media(max-width:600px){
+  #sidebar{width:0;padding:0;border:none;overflow:hidden}
+  #key-input{width:130px}
+}
 </style>
 </head>
 <body>
-<div id="root"></div>
 
-<script type="text/babel">
-const { useState, useRef, useEffect, useCallback } = React;
+<!-- TOPBAR -->
+<div id="topbar">
+  <div id="logo-dot"></div>
+  <span id="logo-text">NeuralDesk</span>
+  <span id="logo-sub">powered by Claude</span>
+  <div id="key-area">
+    <div id="key-unsaved">
+      <input id="key-input" type="password" placeholder="Anthropic API key"/>
+      <button id="key-save">Save</button>
+    </div>
+    <div id="key-saved" style="display:none">
+      <div id="key-status"><div id="key-status-dot"></div>API key set<button id="key-change">change</button></div>
+    </div>
+  </div>
+</div>
 
-// ─── Vector store (your original code, untouched) ───────────────────────────
-function tokenize(text) {
-  return text.toLowerCase().replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter(Boolean);
+<!-- MAIN -->
+<div id="main">
+  <!-- SIDEBAR -->
+  <div id="sidebar">
+    <div id="sidebar-label">Documents</div>
+    <div id="dropzone">
+      <input type="file" id="file-input" accept=".txt,.md,.csv,.json,.html"/>
+      <div id="drop-icon">📂</div>
+      <div>Drop file or click</div>
+      <div id="drop-hint">.txt .md .csv .json .html</div>
+    </div>
+    <div id="doc-list">
+      <div id="no-docs">No documents yet</div>
+    </div>
+  </div>
+
+  <!-- CHAT -->
+  <div id="chat-area">
+    <div id="mode-bar">
+      <button class="mode-btn active" data-mode="rag">⚡ RAG</button>
+      <button class="mode-btn" data-mode="chat">💬 Chat</button>
+      <span id="chunk-info" style="display:none"></span>
+    </div>
+    <div id="messages">
+      <div id="empty-state">
+        <div id="empty-icon">🧠</div>
+        <div id="empty-title">Ask your documents</div>
+        <div id="empty-sub">Upload a file on the left, then ask anything about it</div>
+      </div>
+    </div>
+    <div id="input-area">
+      <div id="input-box">
+        <textarea id="msg-input" rows="1" placeholder="Ask something…"></textarea>
+        <button id="send-btn" disabled>↑</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ── Vector Store (your original logic) ──────────────────────────────────────
+function tokenize(text){
+  return text.toLowerCase().replace(/[^a-z0-9\s]/g," ").split(/\s+/).filter(Boolean);
 }
-function buildTFVector(tokens) {
-  const tf = {};
-  for (const t of tokens) tf[t] = (tf[t] || 0) + 1;
+function buildTFVector(tokens){
+  const tf={};
+  for(const t of tokens) tf[t]=(tf[t]||0)+1;
   return tf;
 }
-function cosineSim(a, b) {
-  const keys = new Set([...Object.keys(a), ...Object.keys(b)]);
-  let dot = 0, magA = 0, magB = 0;
-  for (const k of keys) {
-    const va = a[k] || 0, vb = b[k] || 0;
-    dot += va * vb; magA += va * va; magB += vb * vb;
+function cosineSim(a,b){
+  const keys=new Set([...Object.keys(a),...Object.keys(b)]);
+  let dot=0,magA=0,magB=0;
+  for(const k of keys){
+    const va=a[k]||0,vb=b[k]||0;
+    dot+=va*vb;magA+=va*va;magB+=vb*vb;
   }
-  if (!magA || !magB) return 0;
-  return dot / (Math.sqrt(magA) * Math.sqrt(magB));
+  if(!magA||!magB)return 0;
+  return dot/(Math.sqrt(magA)*Math.sqrt(magB));
 }
-function chunkText(text, chunkSize = 200, overlap = 40) {
-  const words = text.split(/\s+/);
-  const chunks = [];
-  for (let i = 0; i < words.length; i += chunkSize - overlap) {
-    const chunk = words.slice(i, i + chunkSize).join(" ");
-    if (chunk.trim()) chunks.push(chunk);
-    if (i + chunkSize >= words.length) break;
+function chunkText(text,chunkSize=200,overlap=40){
+  const words=text.split(/\s+/);
+  const chunks=[];
+  for(let i=0;i<words.length;i+=chunkSize-overlap){
+    const chunk=words.slice(i,i+chunkSize).join(" ");
+    if(chunk.trim())chunks.push(chunk);
+    if(i+chunkSize>=words.length)break;
   }
   return chunks;
 }
-class VectorStore {
-  constructor() { this.docs = []; }
-  add(text, meta = {}) {
-    const chunks = chunkText(text);
-    chunks.forEach((chunk, i) => {
-      this.docs.push({ chunk, vec: buildTFVector(tokenize(chunk)), meta: { ...meta, chunkIndex: i } });
+class VectorStore{
+  constructor(){this.docs=[];}
+  add(text,meta={}){
+    const chunks=chunkText(text);
+    chunks.forEach((chunk,i)=>{
+      this.docs.push({chunk,vec:buildTFVector(tokenize(chunk)),meta:{...meta,chunkIndex:i}});
     });
     return chunks.length;
   }
-  query(q, topK = 3) {
-    const qvec = buildTFVector(tokenize(q));
+  query(q,topK=3){
+    const qvec=buildTFVector(tokenize(q));
     return this.docs
-      .map(d => ({ ...d, score: cosineSim(qvec, d.vec) }))
-      .sort((a, b) => b.score - a.score)
-      .slice(0, topK)
-      .filter(d => d.score > 0);
+      .map(d=>({...d,score:cosineSim(qvec,d.vec)}))
+      .sort((a,b)=>b.score-a.score)
+      .slice(0,topK)
+      .filter(d=>d.score>0);
   }
-  clear() { this.docs = []; }
-  get count() { return this.docs.length; }
+  clear(){this.docs=[];}
+  get count(){return this.docs.length;}
 }
 
-const store = new VectorStore();
+// ── State ────────────────────────────────────────────────────────────────────
+const store=new VectorStore();
+let mode="rag";
+let docs=[];
+let loading=false;
+let apiKey="";
 
-// ─── Claude API call (replaces streamOllama) ────────────────────────────────
-async function callClaude(systemPrompt, messages, apiKey) {
-  const response = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: "claude-sonnet-4-6",
-      max_tokens: 1000,
-      system: systemPrompt,
-      messages: messages,
-    }),
-  });
-  if (!response.ok) {
-    const err = await response.json().catch(() => ({}));
-    throw new Error(err.error?.message || `API error ${response.status}`);
-  }
-  const data = await response.json();
-  return data.content?.[0]?.text || "";
+// ── DOM refs ─────────────────────────────────────────────────────────────────
+const keyInput=document.getElementById("key-input");
+const keySave=document.getElementById("key-save");
+const keyUnsaved=document.getElementById("key-unsaved");
+const keySaved=document.getElementById("key-saved");
+const keyChange=document.getElementById("key-change");
+const dropzone=document.getElementById("dropzone");
+const fileInput=document.getElementById("file-input");
+const docList=document.getElementById("doc-list");
+const noDocs=document.getElementById("no-docs");
+const modeBar=document.getElementById("mode-bar");
+const chunkInfo=document.getElementById("chunk-info");
+const messagesEl=document.getElementById("messages");
+const emptyState=document.getElementById("empty-state");
+const emptyIcon=document.getElementById("empty-icon");
+const emptyTitle=document.getElementById("empty-title");
+const emptySub=document.getElementById("empty-sub");
+const msgInput=document.getElementById("msg-input");
+const sendBtn=document.getElementById("send-btn");
+const toastEl=document.getElementById("toast");
+
+// ── Toast ────────────────────────────────────────────────────────────────────
+function showToast(msg){
+  toastEl.textContent=msg;
+  toastEl.style.display="block";
+  setTimeout(()=>toastEl.style.display="none",2500);
 }
 
-// ─── Colours (your original palette) ────────────────────────────────────────
-const C = {
-  bg: "#0d0d10", surface: "#16161a", surfaceHigh: "#1e1e24",
-  border: "#2a2a35", accent: "#7c6af7", accentDim: "#3d3578",
-  accentGlow: "rgba(124,106,247,0.15)", text: "#e8e8f0",
-  textMid: "#9898b0", textDim: "#5a5a70", green: "#4ade80", red: "#f87171",
+// ── API Key ──────────────────────────────────────────────────────────────────
+const saved=localStorage.getItem("nd_key");
+if(saved){apiKey=saved;showKeySaved();}
+
+function showKeySaved(){
+  keyUnsaved.style.display="none";
+  keySaved.style.display="flex";
+  updateSendBtn();
+}
+function showKeyUnsaved(){
+  keyUnsaved.style.display="flex";
+  keySaved.style.display="none";
+  updateSendBtn();
+}
+keySave.onclick=()=>{
+  const v=keyInput.value.trim();
+  if(!v)return;
+  apiKey=v;
+  localStorage.setItem("nd_key",v);
+  showKeySaved();
+  showToast("API key saved");
+};
+keyInput.onkeydown=e=>{if(e.key==="Enter")keySave.click();};
+keyChange.onclick=()=>{
+  apiKey="";
+  localStorage.removeItem("nd_key");
+  keyInput.value="";
+  showKeyUnsaved();
 };
 
-// ─── App ─────────────────────────────────────────────────────────────────────
-export default function App() {
-  const [mode, setMode]           = useState("rag");
-  const [apiKey, setApiKey]       = useState("");
-  const [apiKeySaved, setApiKeySaved] = useState(false);
-  const [docs, setDocs]           = useState([]);
-  const [chunkCount, setChunkCount] = useState(0);
-  const [dragging, setDragging]   = useState(false);
-  const [messages, setMessages]   = useState([]);
-  const [input, setInput]         = useState("");
-  const [loading, setLoading]     = useState(false);
-  const [toast, setToast]         = useState(null);
-  const bottomRef = useRef(null);
-  const storeRef  = useRef(store);
-
-  useEffect(() => {
-    const saved = localStorage.getItem("nd_api_key");
-    if (saved) { setApiKey(saved); setApiKeySaved(true); }
-  }, []);
-
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
-
-  const showToast = (msg) => {
-    setToast(msg);
-    setTimeout(() => setToast(null), 2500);
+// ── Mode ─────────────────────────────────────────────────────────────────────
+modeBar.querySelectorAll(".mode-btn").forEach(btn=>{
+  btn.onclick=()=>{
+    mode=btn.dataset.mode;
+    modeBar.querySelectorAll(".mode-btn").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    updateEmptyState();
   };
+});
 
-  const saveKey = () => {
-    if (!apiKey.trim()) return;
-    localStorage.setItem("nd_api_key", apiKey.trim());
-    setApiKeySaved(true);
-    showToast("API key saved");
-  };
-
-  const ingest = useCallback((text, name) => {
-    if (!text.trim()) return;
-    const n = storeRef.current.add(text, { name });
-    setChunkCount(storeRef.current.count);
-    setDocs(prev => [...prev, { name, size: text.length, chunks: n }]);
-    showToast(`"${name}" indexed — ${n} chunks`);
-  }, []);
-
-  const handleFile = async (file) => {
-    const text = await file.text();
-    ingest(text, file.name);
-  };
-
-  const handleDrop = (e) => {
-    e.preventDefault(); setDragging(false);
-    const file = e.dataTransfer.files[0];
-    if (file) handleFile(file);
-  };
-
-  const removeDoc = (idx) => {
-    storeRef.current.clear();
-    setDocs(prev => prev.filter((_, i) => i !== idx));
-    setChunkCount(0);
-    showToast("Document removed");
-  };
-
-  const send = async () => {
-    const q = input.trim();
-    if (!q || loading) return;
-    if (!apiKeySaved) { showToast("Enter your Anthropic API key first"); return; }
-
-    setInput("");
-    const userMsg = { role: "user", content: q };
-    setMessages(prev => [...prev, userMsg]);
-
-    let systemPrompt = "You are a helpful assistant. Be concise and clear.";
-    let sources = [];
-
-    if (mode === "rag" && storeRef.current.count > 0) {
-      const hits = storeRef.current.query(q, 3);
-      if (hits.length) {
-        const context = hits.map((h, i) => `[${i + 1}] ${h.chunk}`).join("\n\n");
-        sources = [...new Set(hits.map(h => h.meta.name).filter(Boolean))];
-        systemPrompt = `You are a helpful assistant. Answer strictly using the context below. If the answer isn't in the context, say so.\n\nCONTEXT:\n${context}`;
-      }
-    }
-
-    const history = [...messages, userMsg].map(m => ({ role: m.role, content: m.content }));
-
-    setLoading(true);
-    setMessages(prev => [...prev, { role: "assistant", content: "", sources, streaming: true }]);
-
-    try {
-      const reply = await callClaude(systemPrompt, history, apiKey);
-      setMessages(prev => {
-        const copy = [...prev];
-        copy[copy.length - 1] = { ...copy[copy.length - 1], content: reply, streaming: false };
-        return copy;
-      });
-    } catch (e) {
-      setMessages(prev => {
-        const copy = [...prev];
-        copy[copy.length - 1] = {
-          ...copy[copy.length - 1],
-          content: `Error: ${e.message}`,
-          streaming: false, error: true,
-        };
-        return copy;
-      });
-    } finally { setLoading(false); }
-  };
-
-  // ── Render ────────────────────────────────────────────────────────────────
-  return (
-    <div style={{ minHeight: "100vh", background: C.bg, color: C.text, fontFamily: "Inter,sans-serif", fontSize: 14 }}>
-
-      {/* Topbar */}
-      <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "0 18px", height: 48, background: C.surface, borderBottom: `1px solid ${C.border}` }}>
-        <div style={{ width: 7, height: 7, borderRadius: "50%", background: C.accent, boxShadow: `0 0 8px ${C.accent}` }} />
-        <span style={{ fontWeight: 600 }}>NeuralDesk</span>
-        <span style={{ fontSize: 11, color: C.textDim, marginLeft: 4 }}>powered by Claude</span>
-
-        {/* API key input in topbar */}
-        <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 6 }}>
-          {!apiKeySaved ? (
-            <>
-              <input
-                type="password"
-                placeholder="Anthropic API key"
-                value={apiKey}
-                onChange={e => setApiKey(e.target.value)}
-                onKeyDown={e => e.key === "Enter" && saveKey()}
-                style={{ background: C.surfaceHigh, border: `1px solid ${C.border}`, color: C.text, padding: "4px 10px", borderRadius: 6, fontSize: 11, width: 200, outline: "none" }}
-              />
-              <button onClick={saveKey} style={{ background: C.accent, border: "none", color: "#fff", padding: "4px 10px", borderRadius: 6, fontSize: 11, cursor: "pointer" }}>
-                Save
-              </button>
-            </>
-          ) : (
-            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-              <div style={{ width: 6, height: 6, borderRadius: "50%", background: C.green }} />
-              <span style={{ fontSize: 11, color: C.green }}>API key set</span>
-              <button onClick={() => { setApiKeySaved(false); localStorage.removeItem("nd_api_key"); }} style={{ background: "none", border: `1px solid ${C.border}`, color: C.textDim, padding: "2px 7px", borderRadius: 5, fontSize: 10, cursor: "pointer" }}>
-                change
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Main layout */}
-      <div style={{ display: "grid", gridTemplateColumns: "240px 1fr", height: "calc(100vh - 48px)" }}>
-
-        {/* Sidebar */}
-        <div style={{ background: C.surface, borderRight: `1px solid ${C.border}`, padding: 16, display: "flex", flexDirection: "column", gap: 12 }}>
-          <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: "1.5px", textTransform: "uppercase", color: C.textDim }}>Documents</div>
-
-          {/* Drop zone */}
-          <div
-            onDragOver={e => { e.preventDefault(); setDragging(true); }}
-            onDragLeave={() => setDragging(false)}
-            onDrop={handleDrop}
-            style={{ border: `1px dashed ${dragging ? C.accent : C.border}`, borderRadius: 8, padding: "24px 12px", textAlign: "center", color: C.textDim, fontSize: 12, cursor: "pointer", position: "relative", background: dragging ? C.accentGlow : "transparent" }}
-          >
-            <input type="file" accept=".txt,.md,.csv,.json,.html" style={{ position: "absolute", inset: 0, opacity: 0, cursor: "pointer", width: "100%", height: "100%" }} onChange={e => e.target.files[0] && handleFile(e.target.files[0])} />
-            <div style={{ fontSize: 20, marginBottom: 6 }}>📂</div>
-            <div>Drop file or click</div>
-            <div style={{ fontSize: 10, color: C.textDim, marginTop: 4 }}>.txt .md .csv .json .html</div>
-          </div>
-
-          {/* Doc list */}
-          <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: 6 }}>
-            {docs.length === 0
-              ? <div style={{ fontSize: 11, color: C.textDim, textAlign: "center", padding: "12px 0" }}>No documents yet</div>
-              : docs.map((d, i) => (
-                <div key={i} style={{ background: C.surfaceHigh, border: `1px solid ${C.border}`, borderRadius: 6, padding: "7px 9px", display: "flex", alignItems: "center", gap: 7 }}>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 11, fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{d.name}</div>
-                    <div style={{ fontSize: 10, color: C.textDim }}>{d.chunks} chunks · {(d.size / 1000).toFixed(1)}KB</div>
-                  </div>
-                  <button onClick={() => removeDoc(i)} style={{ background: "none", border: "none", color: C.textDim, cursor: "pointer", fontSize: 13 }}>✕</button>
-                </div>
-              ))
-            }
-          </div>
-        </div>
-
-        {/* Chat area */}
-        <div style={{ display: "flex", flexDirection: "column", overflow: "hidden" }}>
-
-          {/* Mode tabs */}
-          <div style={{ display: "flex", gap: 2, padding: "6px 14px", borderBottom: `1px solid ${C.border}`, background: C.surface }}>
-            {["rag", "chat"].map(m => (
-              <button key={m} onClick={() => setMode(m)} style={{ padding: "4px 11px", borderRadius: 5, border: mode === m ? `1px solid ${C.accentDim}` : "none", background: mode === m ? C.accentGlow : "transparent", color: mode === m ? C.accent : C.textMid, fontSize: 12, cursor: "pointer" }}>
-                {m === "rag" ? "⚡ RAG" : "💬 Chat"}
-              </button>
-            ))}
-            {mode === "rag" && chunkCount > 0 && (
-              <span style={{ marginLeft: "auto", fontSize: 11, color: C.textDim }}>
-                searching <span style={{ color: C.accent }}>{chunkCount}</span> chunks
-              </span>
-            )}
-          </div>
-
-          {/* Messages */}
-          <div style={{ flex: 1, overflowY: "auto", padding: "20px 22px", display: "flex", flexDirection: "column", gap: 14 }}>
-            {messages.length === 0 && (
-              <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8, color: C.textDim, textAlign: "center" }}>
-                <div style={{ fontSize: 36, opacity: 0.35 }}>{mode === "rag" ? "🧠" : "💬"}</div>
-                <div style={{ fontSize: 15, fontWeight: 500, color: C.textMid }}>{mode === "rag" ? "Ask your documents" : "Chat with Claude"}</div>
-                <div style={{ fontSize: 12, color: C.textDim, maxWidth: 300 }}>
-                  {mode === "rag" ? "Upload a file on the left, then ask anything about it" : "General conversation — no document needed"}
-                </div>
-              </div>
-            )}
-
-            {messages.map((m, i) => (
-              <div key={i} style={{ display: "flex", gap: 10, maxWidth: 740, alignSelf: m.role === "user" ? "flex-end" : "flex-start", flexDirection: m.role === "user" ? "row-reverse" : "row" }}>
-                <div style={{ width: 26, height: 26, borderRadius: 5, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, flexShrink: 0, background: m.role === "assistant" ? C.accentGlow : C.surfaceHigh, border: `1px solid ${m.role === "assistant" ? C.accentDim : C.border}` }}>
-                  {m.role === "assistant" ? "🤖" : "👤"}
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 4, maxWidth: 620 }}>
-                  {m.streaming
-                    ? <div style={{ fontSize: 11, color: C.accent, opacity: 0.7 }}>⚙ Thinking…</div>
-                    : (
-                      <div style={{ padding: "9px 13px", borderRadius: 9, fontSize: 13.5, lineHeight: 1.65, whiteSpace: "pre-wrap", wordBreak: "break-word", background: m.role === "assistant" ? C.surfaceHigh : C.accentDim, border: `1px solid ${m.role === "assistant" ? C.border : C.accent + "44"}`, color: m.error ? C.red : C.text }}>
-                        {m.content}
-                      </div>
-                    )
-                  }
-                  {m.sources?.length > 0 && (
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
-                      {m.sources.map((s, si) => (
-                        <span key={si} style={{ background: C.accentGlow, border: `1px solid ${C.accentDim}`, color: C.accent, fontSize: 10, padding: "1px 6px", borderRadius: 4 }}>{s}</span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-            <div ref={bottomRef} />
-          </div>
-
-          {/* Input */}
-          <div style={{ padding: "10px 14px 14px", borderTop: `1px solid ${C.border}`, background: C.surface }}>
-            <div style={{ display: "flex", gap: 8, background: C.surfaceHigh, border: `1px solid ${C.border}`, borderRadius: 9, padding: "7px 9px" }}>
-              <textarea
-                value={input}
-                onChange={e => setInput(e.target.value)}
-                onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
-                placeholder={apiKeySaved ? "Ask something…" : "Save your API key above first"}
-                style={{ flex: 1, background: "transparent", border: "none", color: C.text, fontFamily: "Inter,sans-serif", fontSize: 13.5, outline: "none", resize: "none", maxHeight: 100, lineHeight: 1.5 }}
-              />
-              <button
-                onClick={send}
-                disabled={loading || !input.trim() || !apiKeySaved}
-                style={{ background: loading || !input.trim() || !apiKeySaved ? C.accentDim : C.accent, border: "none", borderRadius: 6, width: 30, height: 30, display: "flex", alignItems: "center", justifyContent: "center", cursor: loading ? "not-allowed" : "pointer", color: "#fff", fontSize: 13, alignSelf: "flex-end", opacity: loading || !input.trim() ? 0.6 : 1 }}
-              >
-                {loading ? "…" : "↑"}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Toast */}
-      {toast && (
-        <div style={{ position: "fixed", bottom: 20, left: "50%", transform: "translateX(-50%)", background: C.surfaceHigh, border: `1px solid ${C.border}`, color: C.text, padding: "7px 14px", borderRadius: 7, fontSize: 12, zIndex: 999 }}>
-          {toast}
-        </div>
-      )}
-    </div>
-  );
+function updateEmptyState(){
+  if(mode==="rag"){
+    emptyIcon.textContent="🧠";
+    emptyTitle.textContent="Ask your documents";
+    emptySub.textContent="Upload a file on the left, then ask anything about it";
+  } else {
+    emptyIcon.textContent="💬";
+    emptyTitle.textContent="Chat with Claude";
+    emptySub.textContent="General conversation — no document needed";
+  }
 }
 
-ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+// ── File / Drop ───────────────────────────────────────────────────────────────
+dropzone.ondragover=e=>{e.preventDefault();dropzone.classList.add("drag");};
+dropzone.ondragleave=()=>dropzone.classList.remove("drag");
+dropzone.ondrop=e=>{
+  e.preventDefault();dropzone.classList.remove("drag");
+  const f=e.dataTransfer.files[0];
+  if(f)ingestFile(f);
+};
+fileInput.onchange=e=>{
+  const f=e.target.files[0];
+  if(f)ingestFile(f);
+  fileInput.value="";
+};
+
+async function ingestFile(file){
+  const text=await file.text();
+  if(!text.trim())return;
+  const n=store.add(text,{name:file.name});
+  docs.push({name:file.name,size:text.length,chunks:n});
+  renderDocs();
+  updateChunkInfo();
+  showToast(`"${file.name}" indexed — ${n} chunks`);
+}
+
+function renderDocs(){
+  docList.innerHTML="";
+  if(docs.length===0){docList.appendChild(noDocs);return;}
+  docs.forEach((d,i)=>{
+    const el=document.createElement("div");
+    el.className="doc-item";
+    el.innerHTML=`
+      <div style="flex:1;min-width:0">
+        <div class="doc-name">${d.name}</div>
+        <div class="doc-meta">${d.chunks} chunks · ${(d.size/1000).toFixed(1)}KB</div>
+      </div>
+      <button class="doc-remove" data-i="${i}">✕</button>`;
+    docList.appendChild(el);
+  });
+  docList.querySelectorAll(".doc-remove").forEach(btn=>{
+    btn.onclick=()=>{
+      docs.splice(parseInt(btn.dataset.i),1);
+      store.clear();
+      renderDocs();
+      updateChunkInfo();
+      showToast("Document removed");
+    };
+  });
+}
+
+function updateChunkInfo(){
+  if(store.count>0){
+    chunkInfo.style.display="block";
+    chunkInfo.textContent=`searching ${store.count} chunks`;
+  } else {
+    chunkInfo.style.display="none";
+  }
+}
+
+// ── Messages ──────────────────────────────────────────────────────────────────
+let messageHistory=[];
+
+function addMessage(role,content,{sources=[],error=false,thinking=false}={}){
+  const id="m"+Date.now()+Math.random();
+  const row=document.createElement("div");
+  row.className=`msg-row ${role}`;
+  row.id=id;
+
+  const avatarEl=document.createElement("div");
+  avatarEl.className=`msg-avatar ${role}`;
+  avatarEl.textContent=role==="assistant"?"🤖":"👤";
+
+  const body=document.createElement("div");
+  body.className="msg-body";
+
+  if(thinking){
+    const t=document.createElement("div");
+    t.className="msg-thinking";
+    t.textContent="⚙ Thinking…";
+    body.appendChild(t);
+  } else {
+    const bubble=document.createElement("div");
+    bubble.className=`msg-bubble ${role}${error?" error":""}`;
+    bubble.textContent=content;
+    body.appendChild(bubble);
+    if(sources.length){
+      const st=document.createElement("div");
+      st.className="msg-sources";
+      sources.forEach(s=>{
+        const tag=document.createElement("span");
+        tag.className="source-tag";
+        tag.textContent=s;
+        st.appendChild(tag);
+      });
+      body.appendChild(st);
+    }
+  }
+
+  row.appendChild(avatarEl);
+  row.appendChild(body);
+
+  if(emptyState.parentNode===messagesEl) messagesEl.removeChild(emptyState);
+  messagesEl.appendChild(row);
+  messagesEl.scrollTop=messagesEl.scrollHeight;
+  return id;
+}
+
+function updateMessage(id,content,{sources=[],error=false}={}){
+  const row=document.getElementById(id);
+  if(!row)return;
+  const body=row.querySelector(".msg-body");
+  body.innerHTML="";
+  const bubble=document.createElement("div");
+  bubble.className=`msg-bubble assistant${error?" error":""}`;
+  bubble.textContent=content;
+  body.appendChild(bubble);
+  if(sources.length){
+    const st=document.createElement("div");
+    st.className="msg-sources";
+    sources.forEach(s=>{
+      const tag=document.createElement("span");
+      tag.className="source-tag";
+      tag.textContent=s;
+      st.appendChild(tag);
+    });
+    body.appendChild(st);
+  }
+  messagesEl.scrollTop=messagesEl.scrollHeight;
+}
+
+// ── Send ──────────────────────────────────────────────────────────────────────
+function updateSendBtn(){
+  sendBtn.disabled=loading||!msgInput.value.trim()||!apiKey;
+}
+
+msgInput.oninput=()=>{
+  msgInput.style.height="auto";
+  msgInput.style.height=Math.min(msgInput.scrollHeight,100)+"px";
+  updateSendBtn();
+};
+msgInput.onkeydown=e=>{
+  if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();doSend();}
+};
+sendBtn.onclick=doSend;
+
+async function doSend(){
+  const q=msgInput.value.trim();
+  if(!q||loading||!apiKey)return;
+
+  if(!apiKey){showToast("Enter your Anthropic API key first");return;}
+
+  msgInput.value="";
+  msgInput.style.height="auto";
+  loading=true;
+  updateSendBtn();
+
+  // Add user message
+  addMessage("user",q);
+  messageHistory.push({role:"user",content:q});
+
+  // Build system prompt
+  let systemPrompt="You are a helpful assistant. Be concise and clear.";
+  let sources=[];
+
+  if(mode==="rag"&&store.count>0){
+    const hits=store.query(q,3);
+    if(hits.length){
+      const context=hits.map((h,i)=>`[${i+1}] ${h.chunk}`).join("\n\n");
+      sources=[...new Set(hits.map(h=>h.meta.name).filter(Boolean))];
+      systemPrompt=`You are a helpful assistant. Answer strictly using the context below. If the answer isn't in the context, say so.\n\nCONTEXT:\n${context}`;
+    }
+  }
+
+  // Show thinking
+  const thinkId=addMessage("assistant","",{thinking:true});
+
+  try {
+    const res=await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        model:"claude-sonnet-4-6",
+        max_tokens:1000,
+        system:systemPrompt,
+        messages:messageHistory,
+      })
+    });
+
+    if(!res.ok){
+      const err=await res.json().catch(()=>({}));
+      throw new Error(err.error?.message||`API error ${res.status}`);
+    }
+
+    const data=await res.json();
+    const reply=data.content?.[0]?.text||"(no response)";
+    messageHistory.push({role:"assistant",content:reply});
+    updateMessage(thinkId,reply,{sources});
+
+  } catch(e){
+    updateMessage(thinkId,`Error: ${e.message}`,{error:true});
+  }
+
+  loading=false;
+  updateSendBtn();
+}
 </script>
 </body>
-</html>
+ </html>
