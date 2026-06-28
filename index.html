@@ -6,14 +6,14 @@
 <title>NeuralDesk</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#0d0d10;color:#e8e8f0;font-family:Inter,system-ui,sans-serif;font-size:14px;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+body{background:#0d0d10;color:#e8e8f0;font-family:Inter,system-ui,sans-serif;font-size:14px;height:100vh;height:100dvh;display:flex;flex-direction:column;overflow:hidden}
 button{cursor:pointer;font-family:inherit}
 textarea,input{font-family:inherit;outline:none}
 ::-webkit-scrollbar{width:4px}
 ::-webkit-scrollbar-thumb{background:#2a2a35;border-radius:4px}
 
 /* TOPBAR */
-#topbar{display:flex;align-items:center;gap:10px;padding:0 16px;height:50px;background:#16161a;border-bottom:1px solid #2a2a35;flex-shrink:0;flex-wrap:wrap}
+#topbar{display:flex;align-items:center;gap:10px;padding:0 16px;height:50px;background:#16161a;border-bottom:1px solid #2a2a35;flex-shrink:0}
 #logo-dot{width:8px;height:8px;border-radius:50%;background:#7c6af7;box-shadow:0 0 8px #7c6af7;flex-shrink:0}
 #logo-text{font-weight:600;font-size:15px}
 #logo-sub{font-size:11px;color:#5a5a70}
@@ -25,10 +25,10 @@ textarea,input{font-family:inherit;outline:none}
 #key-change{background:none;border:1px solid #2a2a35;color:#5a5a70;padding:3px 8px;border-radius:5px;font-size:11px}
 
 /* LAYOUT */
-#main{display:flex;flex:1;overflow:hidden}
+#main{display:flex;flex:1;overflow:hidden;min-height:0}
 
 /* SIDEBAR */
-#sidebar{width:220px;background:#16161a;border-right:1px solid #2a2a35;display:flex;flex-direction:column;padding:14px;gap:10px;flex-shrink:0}
+#sidebar{width:220px;background:#16161a;border-right:1px solid #2a2a35;display:flex;flex-direction:column;padding:14px;gap:10px;flex-shrink:0;overflow-y:auto}
 #sidebar-label{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#5a5a70}
 #dropzone{border:1px dashed #2a2a35;border-radius:8px;padding:20px 10px;text-align:center;color:#5a5a70;font-size:12px;position:relative;transition:border-color .2s,background .2s}
 #dropzone.drag{border-color:#7c6af7;background:rgba(124,106,247,0.08)}
@@ -43,12 +43,12 @@ textarea,input{font-family:inherit;outline:none}
 #no-docs{font-size:11px;color:#5a5a70;text-align:center;padding:10px 0}
 
 /* CHAT */
-#chat-area{display:flex;flex-direction:column;flex:1;overflow:hidden}
-#mode-bar{display:flex;gap:4px;padding:6px 14px;border-bottom:1px solid #2a2a35;background:#16161a;align-items:center}
+#chat-area{display:flex;flex-direction:column;flex:1;overflow:hidden;min-height:0}
+#mode-bar{display:flex;gap:4px;padding:6px 14px;border-bottom:1px solid #2a2a35;background:#16161a;align-items:center;flex-shrink:0}
 .mode-btn{padding:4px 12px;border-radius:5px;border:none;background:transparent;color:#9898b0;font-size:12px}
 .mode-btn.active{background:rgba(124,106,247,0.15);border:1px solid #3d3578;color:#7c6af7}
 #chunk-info{margin-left:auto;font-size:11px;color:#5a5a70}
-#messages{flex:1;overflow-y:auto;padding:18px 18px;display:flex;flex-direction:column;gap:12px}
+#messages{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:12px;min-height:0}
 #empty-state{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:#5a5a70;text-align:center;padding:40px 20px}
 #empty-icon{font-size:40px;opacity:0.3}
 #empty-title{font-size:15px;font-weight:500;color:#9898b0}
@@ -69,29 +69,68 @@ textarea,input{font-family:inherit;outline:none}
 .msg-sources{display:flex;flex-wrap:wrap;gap:4px;margin-top:2px}
 .source-tag{background:rgba(124,106,247,0.1);border:1px solid #3d3578;color:#7c6af7;font-size:10px;padding:1px 7px;border-radius:4px}
 
-#input-area{padding:10px 14px 14px;border-top:1px solid #2a2a35;background:#16161a}
+/* INPUT - fixed at bottom, never gets cut off */
+#input-area{padding:10px 14px 14px;border-top:1px solid #2a2a35;background:#16161a;flex-shrink:0}
 #input-box{display:flex;gap:8px;background:#1e1e24;border:1px solid #2a2a35;border-radius:9px;padding:8px 10px}
 #msg-input{flex:1;background:transparent;border:none;color:#e8e8f0;font-size:13px;resize:none;max-height:100px;line-height:1.5}
 #send-btn{background:#7c6af7;border:none;border-radius:6px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;align-self:flex-end;flex-shrink:0;transition:opacity .2s}
 #send-btn:disabled{opacity:0.4;cursor:not-allowed}
 
-#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#1e1e24;border:1px solid #2a2a35;color:#e8e8f0;padding:7px 16px;border-radius:7px;font-size:12px;z-index:999;display:none;white-space:nowrap}
+/* MOBILE TOGGLE BUTTON */
+#doc-toggle{display:none;background:#1e1e24;border:1px solid #2a2a35;color:#9898b0;padding:4px 10px;border-radius:5px;font-size:12px}
 
+#toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1e1e24;border:1px solid #2a2a35;color:#e8e8f0;padding:7px 16px;border-radius:7px;font-size:12px;z-index:999;display:none;white-space:nowrap}
+
+/* MOBILE */
 @media(max-width:600px){
-  #sidebar{width:0;padding:0;border:none;overflow:hidden}
-  #key-input{width:130px}
+  #key-input{width:120px}
+  #logo-sub{display:none}
+
+  #doc-toggle{display:block}
+
+  #sidebar{
+    position:fixed;
+    top:50px;
+    left:0;
+    bottom:0;
+    z-index:100;
+    width:260px;
+    transform:translateX(-100%);
+    transition:transform 0.25s ease;
+    border-right:1px solid #2a2a35;
+  }
+  #sidebar.open{transform:translateX(0)}
+
+  #overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    top:50px;
+    background:rgba(0,0,0,0.5);
+    z-index:99;
+  }
+  #overlay.show{display:block}
+
+  #chat-area{width:100%}
+  #messages{padding:12px}
+
+  .msg-body{max-width:85vw}
+
+  #input-area{
+    padding:8px 10px 12px;
+    padding-bottom:calc(12px + env(safe-area-inset-bottom));
+  }
 }
 </style>
 </head>
 <body>
 
-<!-- TOPBAR -->
 <div id="topbar">
   <div id="logo-dot"></div>
   <span id="logo-text">NeuralDesk</span>
   <span id="logo-sub">powered by Claude</span>
   <div id="key-area">
-    <div id="key-unsaved">
+    <div id="key-unsaved" style="display:flex;align-items:center;gap:6px">
       <input id="key-input" type="password" placeholder="Anthropic API key"/>
       <button id="key-save">Save</button>
     </div>
@@ -101,9 +140,9 @@ textarea,input{font-family:inherit;outline:none}
   </div>
 </div>
 
-<!-- MAIN -->
 <div id="main">
-  <!-- SIDEBAR -->
+  <div id="overlay"></div>
+
   <div id="sidebar">
     <div id="sidebar-label">Documents</div>
     <div id="dropzone">
@@ -117,9 +156,9 @@ textarea,input{font-family:inherit;outline:none}
     </div>
   </div>
 
-  <!-- CHAT -->
   <div id="chat-area">
     <div id="mode-bar">
+      <button id="doc-toggle">📂 Docs</button>
       <button class="mode-btn active" data-mode="rag">⚡ RAG</button>
       <button class="mode-btn" data-mode="chat">💬 Chat</button>
       <span id="chunk-info" style="display:none"></span>
@@ -143,74 +182,26 @@ textarea,input{font-family:inherit;outline:none}
 <div id="toast"></div>
 
 <script>
-// ── Vector Store (your original logic) ──────────────────────────────────────
-function tokenize(text){
-  return text.toLowerCase().replace(/[^a-z0-9\s]/g," ").split(/\s+/).filter(Boolean);
-}
-function buildTFVector(tokens){
-  const tf={};
-  for(const t of tokens) tf[t]=(tf[t]||0)+1;
-  return tf;
-}
-function cosineSim(a,b){
-  const keys=new Set([...Object.keys(a),...Object.keys(b)]);
-  let dot=0,magA=0,magB=0;
-  for(const k of keys){
-    const va=a[k]||0,vb=b[k]||0;
-    dot+=va*vb;magA+=va*va;magB+=vb*vb;
-  }
-  if(!magA||!magB)return 0;
-  return dot/(Math.sqrt(magA)*Math.sqrt(magB));
-}
-function chunkText(text,chunkSize=200,overlap=40){
-  const words=text.split(/\s+/);
-  const chunks=[];
-  for(let i=0;i<words.length;i+=chunkSize-overlap){
-    const chunk=words.slice(i,i+chunkSize).join(" ");
-    if(chunk.trim())chunks.push(chunk);
-    if(i+chunkSize>=words.length)break;
-  }
-  return chunks;
-}
-class VectorStore{
-  constructor(){this.docs=[];}
-  add(text,meta={}){
-    const chunks=chunkText(text);
-    chunks.forEach((chunk,i)=>{
-      this.docs.push({chunk,vec:buildTFVector(tokenize(chunk)),meta:{...meta,chunkIndex:i}});
-    });
-    return chunks.length;
-  }
-  query(q,topK=3){
-    const qvec=buildTFVector(tokenize(q));
-    return this.docs
-      .map(d=>({...d,score:cosineSim(qvec,d.vec)}))
-      .sort((a,b)=>b.score-a.score)
-      .slice(0,topK)
-      .filter(d=>d.score>0);
-  }
-  clear(){this.docs=[];}
-  get count(){return this.docs.length;}
-}
+function tokenize(text){return text.toLowerCase().replace(/[^a-z0-9\s]/g," ").split(/\s+/).filter(Boolean)}
+function buildTFVector(tokens){const tf={};for(const t of tokens)tf[t]=(tf[t]||0)+1;return tf}
+function cosineSim(a,b){const keys=new Set([...Object.keys(a),...Object.keys(b)]);let dot=0,magA=0,magB=0;for(const k of keys){const va=a[k]||0,vb=b[k]||0;dot+=va*vb;magA+=va*va;magB+=vb*vb}if(!magA||!magB)return 0;return dot/(Math.sqrt(magA)*Math.sqrt(magB))}
+function chunkText(text,chunkSize=200,overlap=40){const words=text.split(/\s+/);const chunks=[];for(let i=0;i<words.length;i+=chunkSize-overlap){const chunk=words.slice(i,i+chunkSize).join(" ");if(chunk.trim())chunks.push(chunk);if(i+chunkSize>=words.length)break}return chunks}
+class VectorStore{constructor(){this.docs=[]}add(text,meta={}){const chunks=chunkText(text);chunks.forEach((chunk,i)=>{this.docs.push({chunk,vec:buildTFVector(tokenize(chunk)),meta:{...meta,chunkIndex:i}})});return chunks.length}query(q,topK=3){const qvec=buildTFVector(tokenize(q));return this.docs.map(d=>({...d,score:cosineSim(qvec,d.vec)})).sort((a,b)=>b.score-a.score).slice(0,topK).filter(d=>d.score>0)}clear(){this.docs=[]}get count(){return this.docs.length}}
 
-// ── State ────────────────────────────────────────────────────────────────────
 const store=new VectorStore();
-let mode="rag";
-let docs=[];
-let loading=false;
-let apiKey="";
+let mode="rag",docs=[],loading=false,apiKey="";
 
-// ── DOM refs ─────────────────────────────────────────────────────────────────
 const keyInput=document.getElementById("key-input");
 const keySave=document.getElementById("key-save");
 const keyUnsaved=document.getElementById("key-unsaved");
 const keySaved=document.getElementById("key-saved");
 const keyChange=document.getElementById("key-change");
-const dropzone=document.getElementById("dropzone");
+const sidebar=document.getElementById("sidebar");
+const overlay=document.getElementById("overlay");
+const docToggle=document.getElementById("doc-toggle");
 const fileInput=document.getElementById("file-input");
 const docList=document.getElementById("doc-list");
 const noDocs=document.getElementById("no-docs");
-const modeBar=document.getElementById("mode-bar");
 const chunkInfo=document.getElementById("chunk-info");
 const messagesEl=document.getElementById("messages");
 const emptyState=document.getElementById("empty-state");
@@ -221,228 +212,119 @@ const msgInput=document.getElementById("msg-input");
 const sendBtn=document.getElementById("send-btn");
 const toastEl=document.getElementById("toast");
 
-// ── Toast ────────────────────────────────────────────────────────────────────
-function showToast(msg){
-  toastEl.textContent=msg;
-  toastEl.style.display="block";
-  setTimeout(()=>toastEl.style.display="none",2500);
-}
+function showToast(msg){toastEl.textContent=msg;toastEl.style.display="block";setTimeout(()=>toastEl.style.display="none",2500)}
 
-// ── API Key ──────────────────────────────────────────────────────────────────
+// API Key
 const saved=localStorage.getItem("nd_key");
-if(saved){apiKey=saved;showKeySaved();}
+if(saved){apiKey=saved;showKeySaved()}
+function showKeySaved(){keyUnsaved.style.display="none";keySaved.style.display="flex";updateSendBtn()}
+function showKeyUnsaved(){keyUnsaved.style.display="flex";keySaved.style.display="none";updateSendBtn()}
+keySave.onclick=()=>{const v=keyInput.value.trim();if(!v)return;apiKey=v;localStorage.setItem("nd_key",v);showKeySaved();showToast("API key saved")};
+keyInput.onkeydown=e=>{if(e.key==="Enter")keySave.click()};
+keyChange.onclick=()=>{apiKey="";localStorage.removeItem("nd_key");keyInput.value="";showKeyUnsaved()};
 
-function showKeySaved(){
-  keyUnsaved.style.display="none";
-  keySaved.style.display="flex";
-  updateSendBtn();
-}
-function showKeyUnsaved(){
-  keyUnsaved.style.display="flex";
-  keySaved.style.display="none";
-  updateSendBtn();
-}
-keySave.onclick=()=>{
-  const v=keyInput.value.trim();
-  if(!v)return;
-  apiKey=v;
-  localStorage.setItem("nd_key",v);
-  showKeySaved();
-  showToast("API key saved");
-};
-keyInput.onkeydown=e=>{if(e.key==="Enter")keySave.click();};
-keyChange.onclick=()=>{
-  apiKey="";
-  localStorage.removeItem("nd_key");
-  keyInput.value="";
-  showKeyUnsaved();
-};
+// Mobile sidebar toggle
+docToggle.onclick=()=>{sidebar.classList.toggle("open");overlay.classList.toggle("show")};
+overlay.onclick=()=>{sidebar.classList.remove("open");overlay.classList.remove("show")};
 
-// ── Mode ─────────────────────────────────────────────────────────────────────
-modeBar.querySelectorAll(".mode-btn").forEach(btn=>{
+// Mode
+document.getElementById("mode-bar").querySelectorAll(".mode-btn").forEach(btn=>{
   btn.onclick=()=>{
+    if(!btn.dataset.mode)return;
     mode=btn.dataset.mode;
-    modeBar.querySelectorAll(".mode-btn").forEach(b=>b.classList.remove("active"));
+    document.querySelectorAll(".mode-btn").forEach(b=>b.classList.remove("active"));
     btn.classList.add("active");
-    updateEmptyState();
-  };
+    if(mode==="rag"){emptyIcon.textContent="🧠";emptyTitle.textContent="Ask your documents";emptySub.textContent="Upload a file on the left, then ask anything about it"}
+    else{emptyIcon.textContent="💬";emptyTitle.textContent="Chat with Claude";emptySub.textContent="General conversation — no document needed"}
+  }
 });
 
-function updateEmptyState(){
-  if(mode==="rag"){
-    emptyIcon.textContent="🧠";
-    emptyTitle.textContent="Ask your documents";
-    emptySub.textContent="Upload a file on the left, then ask anything about it";
-  } else {
-    emptyIcon.textContent="💬";
-    emptyTitle.textContent="Chat with Claude";
-    emptySub.textContent="General conversation — no document needed";
-  }
-}
-
-// ── File / Drop ───────────────────────────────────────────────────────────────
-dropzone.ondragover=e=>{e.preventDefault();dropzone.classList.add("drag");};
+// File
+const dropzone=document.getElementById("dropzone");
+dropzone.ondragover=e=>{e.preventDefault();dropzone.classList.add("drag")};
 dropzone.ondragleave=()=>dropzone.classList.remove("drag");
-dropzone.ondrop=e=>{
-  e.preventDefault();dropzone.classList.remove("drag");
-  const f=e.dataTransfer.files[0];
-  if(f)ingestFile(f);
-};
-fileInput.onchange=e=>{
-  const f=e.target.files[0];
-  if(f)ingestFile(f);
-  fileInput.value="";
-};
+dropzone.ondrop=e=>{e.preventDefault();dropzone.classList.remove("drag");const f=e.dataTransfer.files[0];if(f)ingestFile(f)};
+fileInput.onchange=e=>{const f=e.target.files[0];if(f)ingestFile(f);fileInput.value=""};
 
 async function ingestFile(file){
   const text=await file.text();
   if(!text.trim())return;
   const n=store.add(text,{name:file.name});
   docs.push({name:file.name,size:text.length,chunks:n});
-  renderDocs();
-  updateChunkInfo();
+  renderDocs();updateChunkInfo();
   showToast(`"${file.name}" indexed — ${n} chunks`);
+  // close sidebar on mobile after upload
+  sidebar.classList.remove("open");overlay.classList.remove("show");
 }
 
 function renderDocs(){
   docList.innerHTML="";
-  if(docs.length===0){docList.appendChild(noDocs);return;}
+  if(docs.length===0){docList.appendChild(noDocs);return}
   docs.forEach((d,i)=>{
     const el=document.createElement("div");
     el.className="doc-item";
-    el.innerHTML=`
-      <div style="flex:1;min-width:0">
-        <div class="doc-name">${d.name}</div>
-        <div class="doc-meta">${d.chunks} chunks · ${(d.size/1000).toFixed(1)}KB</div>
-      </div>
-      <button class="doc-remove" data-i="${i}">✕</button>`;
+    el.innerHTML=`<div style="flex:1;min-width:0"><div class="doc-name">${d.name}</div><div class="doc-meta">${d.chunks} chunks · ${(d.size/1000).toFixed(1)}KB</div></div><button class="doc-remove" data-i="${i}">✕</button>`;
     docList.appendChild(el);
   });
   docList.querySelectorAll(".doc-remove").forEach(btn=>{
-    btn.onclick=()=>{
-      docs.splice(parseInt(btn.dataset.i),1);
-      store.clear();
-      renderDocs();
-      updateChunkInfo();
-      showToast("Document removed");
-    };
+    btn.onclick=()=>{docs.splice(parseInt(btn.dataset.i),1);store.clear();renderDocs();updateChunkInfo();showToast("Document removed")}
   });
 }
 
 function updateChunkInfo(){
-  if(store.count>0){
-    chunkInfo.style.display="block";
-    chunkInfo.textContent=`searching ${store.count} chunks`;
-  } else {
-    chunkInfo.style.display="none";
-  }
+  if(store.count>0){chunkInfo.style.display="block";chunkInfo.textContent=`searching ${store.count} chunks`}
+  else chunkInfo.style.display="none";
 }
 
-// ── Messages ──────────────────────────────────────────────────────────────────
+// Messages
 let messageHistory=[];
 
 function addMessage(role,content,{sources=[],error=false,thinking=false}={}){
   const id="m"+Date.now()+Math.random();
   const row=document.createElement("div");
-  row.className=`msg-row ${role}`;
-  row.id=id;
-
-  const avatarEl=document.createElement("div");
-  avatarEl.className=`msg-avatar ${role}`;
-  avatarEl.textContent=role==="assistant"?"🤖":"👤";
-
-  const body=document.createElement("div");
-  body.className="msg-body";
-
-  if(thinking){
-    const t=document.createElement("div");
-    t.className="msg-thinking";
-    t.textContent="⚙ Thinking…";
-    body.appendChild(t);
-  } else {
+  row.className=`msg-row ${role}`;row.id=id;
+  const av=document.createElement("div");
+  av.className=`msg-avatar ${role}`;av.textContent=role==="assistant"?"🤖":"👤";
+  const body=document.createElement("div");body.className="msg-body";
+  if(thinking){const t=document.createElement("div");t.className="msg-thinking";t.textContent="⚙ Thinking…";body.appendChild(t)}
+  else{
     const bubble=document.createElement("div");
     bubble.className=`msg-bubble ${role}${error?" error":""}`;
-    bubble.textContent=content;
-    body.appendChild(bubble);
-    if(sources.length){
-      const st=document.createElement("div");
-      st.className="msg-sources";
-      sources.forEach(s=>{
-        const tag=document.createElement("span");
-        tag.className="source-tag";
-        tag.textContent=s;
-        st.appendChild(tag);
-      });
-      body.appendChild(st);
-    }
+    bubble.textContent=content;body.appendChild(bubble);
+    if(sources.length){const st=document.createElement("div");st.className="msg-sources";sources.forEach(s=>{const tag=document.createElement("span");tag.className="source-tag";tag.textContent=s;st.appendChild(tag)});body.appendChild(st)}
   }
-
-  row.appendChild(avatarEl);
-  row.appendChild(body);
-
-  if(emptyState.parentNode===messagesEl) messagesEl.removeChild(emptyState);
+  row.appendChild(av);row.appendChild(body);
+  if(emptyState.parentNode===messagesEl)messagesEl.removeChild(emptyState);
   messagesEl.appendChild(row);
   messagesEl.scrollTop=messagesEl.scrollHeight;
   return id;
 }
 
 function updateMessage(id,content,{sources=[],error=false}={}){
-  const row=document.getElementById(id);
-  if(!row)return;
-  const body=row.querySelector(".msg-body");
-  body.innerHTML="";
+  const row=document.getElementById(id);if(!row)return;
+  const body=row.querySelector(".msg-body");body.innerHTML="";
   const bubble=document.createElement("div");
   bubble.className=`msg-bubble assistant${error?" error":""}`;
-  bubble.textContent=content;
-  body.appendChild(bubble);
-  if(sources.length){
-    const st=document.createElement("div");
-    st.className="msg-sources";
-    sources.forEach(s=>{
-      const tag=document.createElement("span");
-      tag.className="source-tag";
-      tag.textContent=s;
-      st.appendChild(tag);
-    });
-    body.appendChild(st);
-  }
+  bubble.textContent=content;body.appendChild(bubble);
+  if(sources.length){const st=document.createElement("div");st.className="msg-sources";sources.forEach(s=>{const tag=document.createElement("span");tag.className="source-tag";tag.textContent=s;st.appendChild(tag)});body.appendChild(st)}
   messagesEl.scrollTop=messagesEl.scrollHeight;
 }
 
-// ── Send ──────────────────────────────────────────────────────────────────────
-function updateSendBtn(){
-  sendBtn.disabled=loading||!msgInput.value.trim()||!apiKey;
-}
+function updateSendBtn(){sendBtn.disabled=loading||!msgInput.value.trim()||!apiKey}
 
-msgInput.oninput=()=>{
-  msgInput.style.height="auto";
-  msgInput.style.height=Math.min(msgInput.scrollHeight,100)+"px";
-  updateSendBtn();
-};
-msgInput.onkeydown=e=>{
-  if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();doSend();}
-};
+msgInput.oninput=()=>{msgInput.style.height="auto";msgInput.style.height=Math.min(msgInput.scrollHeight,100)+"px";updateSendBtn()};
+msgInput.onkeydown=e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();doSend()}};
 sendBtn.onclick=doSend;
 
 async function doSend(){
   const q=msgInput.value.trim();
   if(!q||loading||!apiKey)return;
-
-  if(!apiKey){showToast("Enter your Anthropic API key first");return;}
-
-  msgInput.value="";
-  msgInput.style.height="auto";
-  loading=true;
-  updateSendBtn();
-
-  // Add user message
+  msgInput.value="";msgInput.style.height="auto";
+  loading=true;updateSendBtn();
   addMessage("user",q);
   messageHistory.push({role:"user",content:q});
-
-  // Build system prompt
   let systemPrompt="You are a helpful assistant. Be concise and clear.";
   let sources=[];
-
   if(mode==="rag"&&store.count>0){
     const hits=store.query(q,3);
     if(hits.length){
@@ -451,39 +333,21 @@ async function doSend(){
       systemPrompt=`You are a helpful assistant. Answer strictly using the context below. If the answer isn't in the context, say so.\n\nCONTEXT:\n${context}`;
     }
   }
-
-  // Show thinking
   const thinkId=addMessage("assistant","",{thinking:true});
-
-  try {
+  try{
     const res=await fetch("https://api.anthropic.com/v1/messages",{
       method:"POST",
       headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({
-        model:"claude-sonnet-4-6",
-        max_tokens:1000,
-        system:systemPrompt,
-        messages:messageHistory,
-      })
+      body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:1000,system:systemPrompt,messages:messageHistory})
     });
-
-    if(!res.ok){
-      const err=await res.json().catch(()=>({}));
-      throw new Error(err.error?.message||`API error ${res.status}`);
-    }
-
+    if(!res.ok){const err=await res.json().catch(()=>({}));throw new Error(err.error?.message||`API error ${res.status}`)}
     const data=await res.json();
     const reply=data.content?.[0]?.text||"(no response)";
     messageHistory.push({role:"assistant",content:reply});
     updateMessage(thinkId,reply,{sources});
-
-  } catch(e){
-    updateMessage(thinkId,`Error: ${e.message}`,{error:true});
-  }
-
-  loading=false;
-  updateSendBtn();
+  }catch(e){updateMessage(thinkId,`Error: ${e.message}`,{error:true})}
+  loading=false;updateSendBtn();
 }
 </script>
 </body>
- </html>
+  </html>
